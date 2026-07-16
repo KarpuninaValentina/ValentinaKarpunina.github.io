@@ -113,10 +113,15 @@
     const countSpan = document.getElementById('thankCount');
 
     let hasThanked = localStorage.getItem('hasThanked') === 'true';
+    let isRed = hasThanked;
 
-    if (hasThanked) {
+    // При загрузке устанавливаем состояние сердца
+    if (isRed) {
         heart.textContent = '❤️';
         button.style.backgroundColor = '#ffebee';
+    } else {
+        heart.textContent = '🤍';
+        button.style.backgroundColor = '#f0f0f0';
     }
 
     function updateCount() {
@@ -131,8 +136,21 @@
     }
 
     function sendThankYou() {
-        if (hasThanked) return;
+        // Если уже благодарил, просто переключаем сердечко без отправки
+        if (hasThanked) {
+            // Переключаем состояние сердца
+            isRed = !isRed;
+            if (isRed) {
+                heart.textContent = '❤️';
+                button.style.backgroundColor = '#ffebee';
+            } else {
+                heart.textContent = '🤍';
+                button.style.backgroundColor = '#f0f0f0';
+            }
+            return; // Выходим, не отправляя запрос
+        }
 
+        // Отправляем благодарность
         const formData = new FormData();
         formData.append('source', 'github_pages_site');
 
@@ -143,11 +161,13 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'ok') {
+                // Помечаем, что пользователь уже благодарил
                 hasThanked = true;
                 localStorage.setItem('hasThanked', 'true');
+                isRed = true;
                 heart.textContent = '❤️';
                 button.style.backgroundColor = '#ffebee';
-                updateCount();
+                updateCount(); // Обновляем счётчик
             } else {
                 alert('Произошла ошибка при отправке благодарности.');
             }
