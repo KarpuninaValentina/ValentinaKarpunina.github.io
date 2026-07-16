@@ -106,14 +106,12 @@
 </div>
 
 <script>
-    // --- ВСТАВЬТЕ СЮДА ВАШ URL ОТ GOOGLE ---
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEmHypYuOa8RmDRMkNhSDBLovzVUJVfPfpkcmU-WhgJnvoPtURHryhkZqk2qx-Qf7A/exec';
 
     const button = document.getElementById('thankYouButton');
     const heart = document.getElementById('heartIcon');
     const countSpan = document.getElementById('thankCount');
 
-    // Проверяем, не благодарил ли этот пользователь уже (по localStorage)
     let hasThanked = localStorage.getItem('hasThanked') === 'true';
 
     if (hasThanked) {
@@ -121,7 +119,6 @@
         button.style.backgroundColor = '#ffebee';
     }
 
-    // Функция для обновления счётчика на кнопке
     function updateCount() {
         fetch(SCRIPT_URL)
             .then(response => response.json())
@@ -133,9 +130,8 @@
             .catch(error => console.error('Ошибка загрузки счётчика:', error));
     }
 
-    // Функция для отправки благодарности
     function sendThankYou() {
-        if (hasThanked) return; // Если уже благодарил, ничего не делаем
+        if (hasThanked) return;
 
         const formData = new FormData();
         formData.append('source', 'github_pages_site');
@@ -147,12 +143,10 @@
         .then(response => response.json())
         .then(data => {
             if (data.status === 'ok') {
-                // Меняем состояние кнопки
                 hasThanked = true;
                 localStorage.setItem('hasThanked', 'true');
                 heart.textContent = '❤️';
                 button.style.backgroundColor = '#ffebee';
-                // Обновляем счётчик
                 updateCount();
             } else {
                 alert('Произошла ошибка при отправке благодарности.');
@@ -164,10 +158,7 @@
         });
     }
 
-    // Навешиваем обработчик на кнопку
     button.addEventListener('click', sendThankYou);
-
-    // При загрузке страницы получаем актуальное количество
     updateCount();
 </script>
 
