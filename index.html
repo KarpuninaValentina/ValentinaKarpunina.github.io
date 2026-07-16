@@ -84,18 +84,25 @@
             margin-bottom: 20px;
             border-left: 4px solid #3498db;
                 }
-        .iine-button {
-    font-size: 24px; /* Увеличим шрифт */
-    padding: 15px 30px; /* Увеличим внутренние отступы, чтобы кнопка была больше */
-    background-color: #4CAF50; /* Зеленый фон */
-    color: white; /* Белый текст */
-    border: none;
-    border-radius: 10px; /* Скруглим углы */
-    cursor: pointer;
-    transition: background-color 0.3s; /* Плавное изменение цвета при наведении */
+        /* Стили для кнопки "Поблагодарить" */
+.iine-button {
+    font-size: 28px;        /* Размер текста и иконки */
+    padding: 18px 35px;     /* Внутренние отступы: сверху-снизу и слева-справа */
+    background-color: #4CAF50; /* Зелёный фон */
+    color: white;           /* Белый текст */
+    border: none;           /* Убираем стандартную рамку */
+    border-radius: 12px;    /* Скругление углов */
+    cursor: pointer;        /* Курсор-рука при наведении */
+    transition: background-color 0.3s; /* Плавное изменение цвета */
+    font-weight: bold;      /* Жирный текст для лучшей читаемости */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Лёгкая тень для объёма */
 }
 .iine-button:active {
-    background-color: #45a049; /* Темнее при нажатии */
+    background-color: #45a049; /* Более тёмный цвет при клике */
+}
+.iine-button:disabled {
+    background-color: #95a5a6; /* Серый цвет, когда кнопка неактивна */
+    cursor: not-allowed;      /* Курсор "недоступно" */
 }
         }
     </style>
@@ -106,7 +113,7 @@
     <div class="intro">
         <p><strong>Добро пожаловать!</strong> Здесь собраны мои рассказы. Хочу поделиться с вами своими воспоминаниями и историями из жизни.</p>
     </div>
-<button class="iine-button" aria-hidden="true"></button>
+<button class="iine-button" aria-hidden="true">Поблагодарить автора</button>
     <h2>📚 Список рассказов</h2>
 
     <!-- Пример одного рассказа. Для добавления нового скопируйте этот блок и вставьте ниже -->
