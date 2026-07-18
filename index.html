@@ -107,101 +107,91 @@
 </div>
 
 <script>
-    // ⬇️ ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ ИЗ YANDEX CLOUD ⬇️ 
-    const SCRIPT_URL = 'https://functions.yandexcloud.net/d4evn15n9ca998ir5kol';
+// ⬇️ ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ ИЗ YANDEX CLOUD ⬇️
+const SCRIPT_URL = 'https://functions.yandexcloud.net/d4evn15n9ca998ir5kol';
 
-    const button = document.getElementById('thankYouButton');
-    const heart = document.getElementById('heartIcon');
-    const countSpan = document.getElementById('thankCount');
+const button = document.getElementById('thankYouButton');
+const heart = document.getElementById('heartIcon');
+const countSpan = document.getElementById('thankCount');
 
-    // Проверяем, не благодарил ли пользователь ранее (сохраняется в браузере)
-    let hasThanked = localStorage.getItem('hasThanked') === 'true';
-    let isRed = hasThanked;
+// Ключ для хранения состояния
+const STORAGE_KEY = 'hasThanked';
 
-    // Устанавливаем начальное состояние сердца
-    if (isRed) {
+// Проверяем, благодарил ли уже этот пользователь
+let hasThanked = localStorage.getItem(STORAGE_KEY) === 'true';
+
+// ==================== ОБНОВЛЕНИЕ ВИДА ====================
+function updateUI(count) {
+    countSpan.textContent = count;
+
+    if (hasThanked) {
         heart.textContent = '❤️';
         button.style.backgroundColor = '#ffebee';
         button.style.borderColor = '#ff6b6b';
+    } else {
+        heart.textContent = '🤍';
+        button.style.backgroundColor = '#f0f0f0';
+        button.style.borderColor = '#ddd';
     }
+}
 
-    // Функция для обновления счётчика
-    function updateCount() {
-        fetch(SCRIPT_URL)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Ошибка сети: ' + response.status);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.count !== undefined) {
-                    countSpan.textContent = data.count;
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка загрузки счётчика:', error);
-                countSpan.textContent = '?';
-            });
-    }
-
-    // Функция для отправки благодарности
-    function sendThankYou() {
-        // Если уже благодарил — просто переключаем сердечко без отправки запроса
-        if (hasThanked) {
-            isRed = !isRed;
-            if (isRed) {
-                heart.textContent = '❤️';
-                button.style.backgroundColor = '#ffebee';
-                button.style.borderColor = '#ff6b6b';
-            } else {
-                heart.textContent = '🤍';
-                button.style.backgroundColor = '#f0f0f0';
-                button.style.borderColor = '#ddd';
-            }
-            return;
-        }
-
-        // Отправляем благодарность
-        fetch(SCRIPT_URL, {
-            method: 'POST'
-        })
+// ==================== ЗАГРУЗКА СЧЁТЧИКА ====================
+function updateCount() {
+    fetch(SCRIPT_URL)
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Ошибка сети: ' + response.status);
-            }
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             return response.json();
         })
         .then(data => {
-            if (data.status === 'ok' || data.count !== undefined) {
-                // Успешно
-                hasThanked = true;
-                localStorage.setItem('hasThanked', 'true');
-                isRed = true;
-                heart.textContent = '❤️';
-                button.style.backgroundColor = '#ffebee';
-                button.style.borderColor = '#ff6b6b';
-                // Обновляем счётчик
-                if (data.count !== undefined) {
-                    countSpan.textContent = data.count;
-                } else {
-                    updateCount();
-                }
-            } else {
-                alert('Произошла ошибка при отправке благодарности.');
+            if (data.count !== undefined) {
+                updateUI(data.count);
             }
         })
         .catch(error => {
-            console.error('Ошибка:', error);
-            alert('Не удалось отправить благодарность. Проверьте соединение.');
+            console.error('Ошибка загрузки счётчика:', error);
+            countSpan.textContent = '?';
         });
+}
+
+// ==================== ОТПРАВКА БЛАГОДАРНОСТИ ====================
+function sendThankYou() {
+    // Если уже благодарил — ничего не делаем
+    if (hasThanked) {
+        return;
     }
 
-    // Привязываем обработчик клика
-    button.addEventListener('click', sendThankYou);
+    fetch(SCRIPT_URL, {
+        method: 'POST'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'ok' || data.count !== undefined) {
+            // Успешно
+            hasThanked = true;
+            localStorage.setItem(STORAGE_KEY, 'true');
+            
+            // Обновляем интерфейс
+            updateUI(data.count !== undefined ? data.count : '?');
+        } else {
+            alert('Произошла ошибка при отправке.');
+        }
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Не удалось отправить благодарность. Проверьте соединение.');
+    });
+}
 
-    // При загрузке страницы получаем актуальное количество
-    updateCount();
+// ==================== ИНИЦИАЛИЗАЦИЯ ====================
+button.addEventListener('click', sendThankYou);
+
+// Загружаем актуальный счётчик при открытии страницы
+updateCount();
 </script>
     <h2>📚 Список рассказов</h2>
 
